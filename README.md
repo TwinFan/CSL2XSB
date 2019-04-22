@@ -46,8 +46,10 @@ X-CSL packages can be downloaded [here](https://csl.x-air.ru/downloads?lang_id=4
 
 Do not let `CSL2XSB.py` run on this original download. Always make a copy of the entire folder into a folder LiveTraffic can reach, e.g. to `<...>/LiveTraffic/Resources/X-CSL`. No run the script on this copy, e.g. like this:
 ```
-python3 CSL2XSB.py <...>/LiveTraffic/Resources/X-CSL
+python CSL2XSB.py <...>/LiveTraffic/Resources/X-CSL
 ```
+(Note that in some environments like Mac OS you need to specifically call `python3` instead of just `python`.)
+
 You can always repeat the above call and the script shall do it just again (e.g. in case you modified any files manually). It keeps copies of original files that it needs for a repeated run.
 
 What the script then does is, in brief, as follows:
