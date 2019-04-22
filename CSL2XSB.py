@@ -317,8 +317,8 @@ def ConvFolder(path: Path) -> int:
                    word[0] == 'OFFSET':
                     line = None
 
-                # OBJ8 SOLID is the one line we _really_ need to work on!
-                elif (word[0] == 'OBJ8' and word[1] == 'SOLID'):
+                # OBJ8 SOLID/LIGHTS is the one line we _really_ need to work on!
+                elif (word[0] == 'OBJ8' and (word[1] == 'SOLID' or word[1] == 'LIGHTS')):
                     Obj8SolidLine = HandleXsbObj8Solid(path, line)
                     if Obj8SolidLine is not None:
                         # and we did something to the OBJ8 line:
