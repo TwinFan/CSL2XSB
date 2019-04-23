@@ -309,11 +309,15 @@ def ConvFolder(path: Path) -> int:
                         currAirline = thisAirline
                         line = 'AIRLINE ' + currIcaoType + ' ' + currAirline
 
+                # GLASS is deprecated, replace it with SOLID
+                if word[0] == 'OBJ8' and word[1] == 'GLASS':
+                    word[1] = 'SOLID'
+                    line = ' '.join(word)
+
                 # -- now decide what to do with the line
 
                 # ignore deprecated or PE-extension commands
-                if (word[0] == 'OBJ8' and word[1] == 'GLASS') or     \
-                   (word[0] == 'OBJ8' and word[1] == 'LOW_LOD') or   \
+                if (word[0] == 'OBJ8' and word[1] == 'LOW_LOD') or   \
                    word[0] == 'OFFSET':
                     line = None
 
@@ -348,13 +352,28 @@ def ConvFolder(path: Path) -> int:
 
 """ === MAIN === """
 # --- Handling command line argumens ---
-parser = argparse.ArgumentParser(description='Convert CSL packages to original XSB format. Tested with: X-CSL.',fromfile_prefix_chars='@')
-parser.add_argument('path', help='Base path, searched recursively for CSL packages identified by existing xsb_aircraft.txt files')
+parser = argparse.ArgumentParser(description='CSL2XSB 0.1.1: Convert CSL packages to original XSB format. Tested with: X-CSL.',fromfile_prefix_chars='@')
+parser.add_argument('path', help='Base path, searched recursively for CSL packages identified by existing xsb_aircraft.txt files', nargs='?', default='NULL')
 parser.add_argument('--noupdate', help='Suppress update of OBJ8 files if there are no additional textures', action='store_true')
 parser.add_argument('--norecursion', help='Do not search directories recursively', action='store_true')
 parser.add_argument('-v', '--verbose', help='More detailed output about every change', action='store_true')
 
 args = parser.parse_args()
+
+# If called with no argument (e.g. by double-clicking the script) ask the user interactively
+# if (s)he likes to work on the current directory.
+UserWantsIt = None
+if args.path == 'NULL':
+    args.path = Path.cwd()
+    print (parser.description)
+    print ('Do you want to run CSL2XSB on the current directory "'+str(args.path)+'"?')
+    while True:
+        UserWantsIt = input ('Answer "y" or "n": ')
+        if UserWantsIt.upper() == 'N':
+            print ('You answered "N", so we exit without doing anything. Try "python CSL2XSBpy -h" for help.')
+            exit()
+        if UserWantsIt.upper() == 'Y':
+            break
 
 # normalize the path, resolves relative paths and makes nice directory delimiters
 basePath = Path(args.path)
@@ -367,6 +386,10 @@ if args.verbose:
 # --- Do it ---
 numConverted = ConvFolder(basePath)
 print ('Done. Converted ' + str(numConverted) + ' OBJ8 files in total. Produced ' + str(_warnings) + ' warning(s).')
+
+# Running interactively?
+if UserWantsIt is not None:
+    input ("Hit [Enter] to finish.")
 
 # --- Done ---
 exit(0)
