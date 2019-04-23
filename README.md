@@ -9,6 +9,17 @@ More probably to come with future versions.
 As this is a Python 3 script you [need Python 3](https://www.python.org/downloads/).
 Tested with Python 3.7.3.
 
+## Simple usage in Windows
+
+- Install Python 3 using the "Windows x86-64 web-based installer" [direct link for v3.7.3](https://www.python.org/ftp/python/3.7.3/python-3.7.3-amd64-webinstall.exe).
+    - Important: Check (select) the option "Add Python 3.7 to PATH" at the bottom of the "Install Python" window.
+    - Click on "Install Now". Python will install.
+    - When donw, click "Close" in the "Setup was successfull" screen. Now you've got Python 3.
+- Download a CSL package like from X-CSL.
+- Make a copy of it!
+- Put the `CSL2XSB.py` script into the base directory of the that copy.
+- Double-lick the `CSL2XSB.py` script in the explorer to start it. It will ask you if you want to run the script in that current directory. Enter "y" and hit Enter.
+
 ## Synopsis
 
 ```
