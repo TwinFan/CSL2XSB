@@ -55,7 +55,7 @@ This only works for the OBJ8 format, which, however, is nowadays common.
 
 X-CSL packages can be downloaded [here](https://csl.x-air.ru/downloads?lang_id=43). If you don't already have the package (e.g. because you use X-IvAp) then download and start the installer. The installer will _not_ identify LiveTraffic as a supported plugin. Instead, from the menu select `File > Select Custom Path` and specify a path where the CSL packages are to be downloaded to and where they later can be updated. 
 
-Do not let `CSL2XSB.py` run on this original download. Always make a copy of the entire folder into a folder LiveTraffic can reach, e.g. to `<...>/LiveTraffic/Resources/X-CSL`. No run the script on this copy, e.g. like this:
+Do not let `CSL2XSB.py` run on this original download. Always make a copy of the entire folder into a folder LiveTraffic can reach, e.g. to `<...>/LiveTraffic/Resources/X-CSL`. Now run the script on this copy, e.g. like this:
 ```
 python CSL2XSB.py <...>/LiveTraffic/Resources/X-CSL
 ```
@@ -66,15 +66,15 @@ You can always repeat the above call and the script shall do it just again (e.g.
 What the script then does is, in brief, as follows:
 1. It searches for `xsb_aircraft.txt` files. If it does not find any in the current directory it will recursively dig deeper into the folder structure. So it will eventually find all folders below `X-CSL`.
 2. It copies the `xsb_aircraft.txt` file to `xsb_aircraft.txt.orig` and reads that to create a new `xsb_aircraft.txt` file.
-3. **The `OBJ8 SOLID/LIGHTS` lines are at the core:** Here, additional parameters often define the texture files to use. The original format does not support these texture parameters. Instead, the textures are to be defined in the `.OBJ` file.
+3. **The `OBJ8 SOLID/LIGHTS/GLASS` lines are at the core:** Here, additional parameters often define the texture files to use. The original format does not support these texture parameters. Instead, the textures are to be defined in the `.OBJ` file.
     - To remedy this, the script now also reads the `.OBJ` file and writes a _new_ version of it replacing the `TEXTURE` and `TEXTURE_LIT` lines.
-    - This new `.OBJ` file is then referred to in the `OBJ8 SOLID/LIGHTS` line in the output version of `xsb_aircraft.txt`.
+    - This new `.OBJ` file is then referred to in the `OBJ8 SOLID/LIGHTS` line in the output version of `xsb_aircraft.txt`. (An original `OBJ8 GLASS` line will be written to output as `OBJ8 SOLID` as `GLASS` is now deprecated.)
     - The availability of the referred texture and lit-texture files is tested. Some of them do not exist in the package, which causes warnings by the script. This is a problem in the original X-CSL package. In a few cases, the script can find a replacement by just replacing the extension of the texture file.
 4. The script makes sure, that there is always a standard version of each aircraft type, identified by the `ICAO` line, so that at least some model/livery combination will be found and used by LiveTraffic, even if no exact airline match is possible.
 5. Also, the script makes sure, that for each model/airline combination there is a default airline livery defined using the `AIRLINE` line. X-CSL sometimes provides several liveries for one airline (using `LIVERY` lines). But in the real world of LiveTraffic there is no way of identifying which aircraft uses which of these liveries, which often are just named arbitrarily `S`, `S1`, `S2`, and so on. This change makes sure that the first livery defined per airline is at least found and used. The other liveries are inaccessible to LiveTraffic at the moment.
 6. Minor other changes:
     - Replace the non-existing ICAO aircraft designator `MD80` with `MD81`.
-    - Remove deprecated lines like `OBJ8 GLASS/LOW_LOD` from `xsb_aircraft.txt`
+    - Remove deprecated lines like `LOW_LOD` from `xsb_aircraft.txt`
     - Replace `:` or spaces in `OBJ8` aircraft names with `_`.
 
 The size of the complete X-CSL package increases from about 2 GB to about 3.2 GB due to the additionally created `.OBJ` files.
