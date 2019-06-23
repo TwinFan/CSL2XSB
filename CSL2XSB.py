@@ -35,8 +35,51 @@ import argparse                     # handling command line arguments
 _currAircraft = ''                  # name of currently processed aircraft
 _warnings = 0                       # number of warnings
 
+# dataRef replacement table: Very simple:
+# if finding the string on the left-hand side (non-libxplanemp dataRef)
+# then replace it with the string on the right-hand side (libxplanemp dataRef)
+_DR = {
+    'cjs/world_traffic/engine_rotation_angle1':     'libxplanemp/engines/engine_rotation_angle_deg',
+    'cjs/world_traffic/engine_rotation_angle2':     'libxplanemp/engines/engine_rotation_angle_deg',
+    'cjs/world_traffic/engine_rotation_angle3':     'libxplanemp/engines/engine_rotation_angle_deg',
+    'cjs/world_traffic/engine_rotation_angle4':     'libxplanemp/engines/engine_rotation_angle_deg',
+    'cjs/world_traffic/engine_rpm1':                'libxplanemp/engines/engine_rotation_speed_rpm',
+    'cjs/world_traffic/engine_rpm2':                'libxplanemp/engines/engine_rotation_speed_rpm',
+    'cjs/world_traffic/engine_rpm3':                'libxplanemp/engines/engine_rotation_speed_rpm',
+    'cjs/world_traffic/engine_rpm4':                'libxplanemp/engines/engine_rotation_speed_rpm',
+    'cjs/world_traffic/thrust_reverser_position':   'libxplanemp/engines/thrust_reverser_deploy_ratio',
+    'cjs/world_traffic/touch_down':                 'libxplanemp/misc/touch_down',
+    'cjs/world_traffic/main_gear_deflection':       'libxplanemp/gear/tire_vertical_deflection_mtr',
+    'cjs/world_traffic/main_gear_wheel_angle':      'libxplanemp/gear/tire_rotation_angle_deg',
+    'cjs/world_traffic/nose_gear_deflection':       'libxplanemp/gear/tire_vertical_deflection_mtr',
+    'cjs/world_traffic/nose_gear_wheel_angle':      'libxplanemp/gear/tire_rotation_angle_deg',
+    'cjs/world_traffic/nose_gear_steering_angle':   'libxplanemp/controls/nws_ratio',
+    'cjs/wolrd_traffic/landing_lights_on':          'libxplanemp/controls/landing_lites_on',
+ }
+
+def OBJ8ReplaceDataRefs(line:str) -> str:
+    """Replaces dataRefs
+
+    1. Replaces by replacement table, e.g. to replace world_traffic dataRefs
+       with libxplanemp/PE dataRefs
+    2. If commanded, replaces root 'libxplanemp' by 'LT' (or whatever has been specified)
+    """
+
+    global _warnings
+
+    # replace dataRefs as per replacement table
+    for old, new in _DR.items():
+        line = line.replace(old, new)
+
+    # if requested replace libxplanemp with something else
+    if args.replaceDR is not None:
+        line = line.replace('libxplanemp/', args.replaceDR + '/')
+
+    return line
+
+
 def UpdateOBJ8File(in_p:Path, out_p:Path, textureLivery:str = None, textureLit:str = None):
-    """Updates the OBJ8 file: TEXTURE and dataRefsself."""
+    """Updates the OBJ8 file: TEXTURE and dataRefs."""
 
     global _warnings
 
@@ -67,6 +110,9 @@ def UpdateOBJ8File(in_p:Path, out_p:Path, textureLivery:str = None, textureLit:s
                 # replace LIT texture
                 if textureLit is not None and word[0] == 'TEXTURE_LIT':
                     line = 'TEXTURE_LIT ' + textureLit
+
+            # dataRefs replacements
+            line = OBJ8ReplaceDataRefs(line)
 
             # write to output
             if args.verbose and line != origLine:
@@ -357,6 +403,7 @@ parser.add_argument('path', help='Base path, searched recursively for CSL packag
 parser.add_argument('--noupdate', help='Suppress update of OBJ8 files if there are no additional textures', action='store_true')
 parser.add_argument('--norecursion', help='Do not search directories recursively', action='store_true')
 parser.add_argument('-v', '--verbose', help='More detailed output about every change', action='store_true')
+parser.add_argument('--replaceDR', metavar="TEXT", help="Replace dataRef's root 'libxplanemp' with TEXT.\nCAUTION: CSLs' animations/lights will no longer work with standard multipayer clients not supporting modified dataRefs!")
 
 args = parser.parse_args()
 
@@ -374,6 +421,11 @@ if args.path == 'NULL':
             exit()
         if UserWantsIt.upper() == 'Y':
             break
+
+    print ('Expert option: Do you want to replace dataRefs in the CSL so they only work with LiveTraffic and no longer interfere with other multiplayer clients?')
+    UserWantsDRReplacement = input ('If unsure, just press [Enter], if you really want this enter "Y": ')
+    if UserWantsDRReplacement.upper() == 'Y':
+        args.replaceDR='LT'
 
 # normalize the path, resolves relative paths and makes nice directory delimiters
 basePath = Path(args.path)
