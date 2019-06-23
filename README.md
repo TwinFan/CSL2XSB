@@ -1,7 +1,8 @@
 # CSL2XSB
-Converts CSL packages to the original XSB format for use in [LiveTraffic](https://twinfan.gitbook.io/livetraffic/) (and probably XSquawkBox).
+Converts CSL packages to the original XSB format for use in [LiveTraffic](https://twinfan.gitbook.io/livetraffic/) (and probably XSquawkBox). Updates some CSL dataRefs (engine/prop rotation, reversers) so they become available to LiveTraffic.
 Currently only tested with the following providers:
 
+- [Bluebell Package](https://forums.x-plane.org/index.php?/files/file/37041-bluebell-obj8-csl-packages/)
 - [X-CSL](https://csl.x-air.ru/?lang_id=43)
 
 More probably to come with future versions.
@@ -19,27 +20,33 @@ Tested with Python 3.7.3.
 - Make a copy of it!
 - Put the `CSL2XSB.py` script into the base directory of the that copy.
 - Double-lick the `CSL2XSB.py` script in the explorer to start it. It will ask you if you want to run the script in that current directory. Enter "y" and hit Enter.
+- It then asks "Do you want to replace dataRefs in the CSL...?" Read below about it in the section "Several multiplayer clients in parallel". If unsure leave this alone and just hit enter.
 
 ## Synopsis
 
 ```
-usage: CSL2XSB.py [-h] [--noupdate] [--norecursion] [-v] path
+usage: CSL2XSB.py [-h] [--noupdate] [--norecursion] [-v] [--replaceDR TEXT]
+                  [path]
 
-Convert CSL packages to original XSB format. Tested with: X-CSL.
+CSL2XSB 0.2.0: Convert CSL packages to original XSB format. Tested with:
+X-CSL.
 
 positional arguments:
-  path           Base path, searched recursively for CSL packages identified
-                 by existing xsb_aircraft.txt files
+  path              Base path, searched recursively for CSL packages
+                    identified by existing xsb_aircraft.txt files
 
 optional arguments:
-  -h, --help     show this help message and exit
-  --noupdate     Suppress update of OBJ8 files if there are no additional
-                 textures
-  --norecursion  Do not search directories recursively
-  -v, --verbose  More detailed output about every change
+  -h, --help        show this help message and exit
+  --noupdate        Suppress update of OBJ8 files if there are no additional
+                    textures
+  --norecursion     Do not search directories recursively
+  -v, --verbose     More detailed output about every change
+  --replaceDR TEXT  Replace dataRef's root 'libxplanemp' with TEXT. CAUTION:
+                    CSLs' animations/lights will no longer work with standard
+                    multipayer clients not supporting modified dataRefs!
 ```
 
-This will likely produce many new files, especially new `.OBJ` files, so disk usgae increases.
+This will likely produce many new files, especially new `.OBJ` files, so disk usage increases.
 
 ## Background
 
@@ -48,6 +55,16 @@ The format of CSL packages has originally been defined with the creation of the 
 To make other packages accessible to LiveTraffic (and likely, though not tested: XSquawkBox) this Python script `CSL2XSB.py` converts their format.
 
 This only works for the OBJ8 format, which, however, is nowadays common.
+
+### Using several multiplayer clients in parallel - replacing root dataRef string
+
+Several multiplayer clients based on `libxplanemp` can in principle run in parallel. But it is the library, which registers the [CSL dataRefs for animations/lights](https://github.com/kuroneko/libxplanemp/wiki/OBJ8-CSL#animations), by which the objects (read: planes) learn about gear/flap extension ratio, lights etc. There can only be one plugin, which can control gear/flap/lights etc. of its AI planes. The others fail to register the CSL dataRefs and cannot control these details of their planes.
+
+LiveTraffic implements a temporariy workaround for the situation: It offers to change these dataRefs, which usually all start with the text `libxplanemp/` to start with `LT/` instead. For this to work also all CSL objects, i.e. the `.obj` files need to be changed to also use the `LT/` dataRef.
+
+`CSL2XSB` offers to perform this change mit the `--replaceDR` option. On the command line you can enter any string. With LiveTraffic, only `LT` will work. The interactive version (see "Simple Usage in Windows" above) only asks _if_ the user wants to have it replaced and replaces it with `LT`.
+
+**Note:** CSL package converted to a different dataRef root can no longer be used with any other client. This copy will only work with LiveTraffic and only if the root string is `LT`.
 
 ## Package-specific Information
 
@@ -82,3 +99,11 @@ The size of the complete X-CSL package increases from about 2 GB to about 3.2 GB
 The resulting folder structures and its files should be usable by LiveTraffic and produce no more warnings (except currently for one issue of `valid OBJ8 part types are LIGHTS or SOLID.  Got LIGHTS.`, which is a bug in libxplanemp and fixed with the next version, see [LiveTraffic issue 131](https://github.com/TwinFan/LiveTraffic/issues/131) to be shipped with v1.20).
 
 See LiveTraffic's [documentation on CSL settings](https://twinfan.gitbook.io/livetraffic/setup/configuration/settings-csl) for how to provide LiveTraffic with the path to the converted X-CSL package.
+
+### Bluebell
+
+The Bluebell package is the standard package recommended for usage with LiveTraffic. Many CSL object in the Bluebell package are capable of turning rotors or open reversers. But as there was no `libxplanemp` CSL dataRef to control these animation they stayed unchanged in the `.obj` files, e.g. like `cjs/world_traffic/engine_rotation_angle1`.
+
+LiveTraffic now implements more CSL dataRefs than in the standard `libxplanemp` version, e.g. for engine/prop rotation and reversers animation, and tries to stick to a [standard set by PilotEdge](https://www.pilotedge.net/pages/csl-authoring) as far as possible.
+
+`CSL2XSB` replaces these dataRefs with the ones LiveTraffic now supports so that rotors do rotate etc. The example above will be replaced with `libxplanemp/engines/engine_rotation_angle_deg`. For a complete list of replacement dataRefs see the very beginning of the script in the map called `_DR`.
