@@ -398,7 +398,7 @@ def ConvFolder(path: Path) -> int:
 
 """ === MAIN === """
 # --- Handling command line argumens ---
-parser = argparse.ArgumentParser(description='CSL2XSB 0.2.0: Convert CSL packages to original XSB format. Tested with: X-CSL.',fromfile_prefix_chars='@')
+parser = argparse.ArgumentParser(description='CSL2XSB 0.2.0: Convert CSL packages to original XSB format, convert some animation dataRefs. Tested with: Bluebell, X-CSL.',fromfile_prefix_chars='@')
 parser.add_argument('path', help='Base path, searched recursively for CSL packages identified by existing xsb_aircraft.txt files', nargs='?', default='NULL')
 parser.add_argument('--noupdate', help='Suppress update of OBJ8 files if there are no additional textures', action='store_true')
 parser.add_argument('--norecursion', help='Do not search directories recursively', action='store_true')
