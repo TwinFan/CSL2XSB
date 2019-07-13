@@ -111,8 +111,9 @@ def UpdateOBJ8File(in_p:Path, out_p:Path, textureLivery:str = None, textureLit:s
                 if textureLit is not None and word[0] == 'TEXTURE_LIT':
                     line = 'TEXTURE_LIT ' + textureLit
 
-            # dataRefs replacements
-            line = OBJ8ReplaceDataRefs(line)
+            # dataRefs replacements (only if there is a change for dataRefs in the line)
+            if '/' in line:
+                line = OBJ8ReplaceDataRefs(line)
 
             # write to output
             if args.verbose and line != origLine:
@@ -422,7 +423,7 @@ if args.path == 'NULL':
         if UserWantsIt.upper() == 'Y':
             break
 
-    print ('Expert option: Do you want to replace dataRefs in the CSL so they only work with LiveTraffic and no longer interfere with other multiplayer clients?')
+    print ('Expert option: Do you want to make the CSL packages unique to LiveTraffic? (Read https://twinfan.gitbook.io/livetraffic/setup/installation/csl2xsb !)')
     UserWantsDRReplacement = input ('If unsure, just press [Enter], if you really want this enter "Y": ')
     if UserWantsDRReplacement.upper() == 'Y':
         args.replaceDR='LT'

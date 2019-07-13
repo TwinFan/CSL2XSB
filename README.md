@@ -20,7 +20,7 @@ Tested with Python 3.7.3.
 - Make a copy of it!
 - Put the `CSL2XSB.py` script into the base directory of the that copy.
 - Double-lick the `CSL2XSB.py` script in the explorer to start it. It will ask you if you want to run the script in that current directory. Enter "y" and hit Enter.
-- It then asks "Do you want to replace dataRefs in the CSL...?" Read below about it in the section "Several multiplayer clients in parallel". If unsure leave this alone and just hit enter.
+- It then asks "Do you want to make the CSL packages unique to LiveTraffic?" Read below about it in the section "Several multiplayer clients in parallel". If unsure leave this alone and just hit enter.
 
 ## Synopsis
 
@@ -60,17 +60,17 @@ This only works for the OBJ8 format, which, however, is nowadays common.
 
 Several multiplayer clients based on `libxplanemp` can in principle run in parallel. But it is the library, which registers the [CSL dataRefs for animations/lights](https://github.com/kuroneko/libxplanemp/wiki/OBJ8-CSL#animations), by which the objects (read: planes) learn about gear/flap extension ratio, lights etc. There can only be one plugin, which can control gear/flap/lights etc. of its AI planes. The others fail to register the CSL dataRefs and cannot control these details of their planes.
 
-LiveTraffic implements a temporariy workaround for the situation: It offers to change these dataRefs, which usually all start with the text `libxplanemp/` to start with `LT/` instead. For this to work also all CSL objects, i.e. the `.obj` files need to be changed to also use the `LT/` dataRef.
+LiveTraffic implements a temporary workaround for the situation: It offers to change these dataRefs, which usually all start with the text `libxplanemp/` to start with `LT/` instead. For this to work also all CSL objects, i.e. the `.obj` files, need to be changed to also use the `LT/` dataRef.
 
-`CSL2XSB` offers to perform this change mit the `--replaceDR` option. On the command line you can enter any string. With LiveTraffic, only `LT` will work. The interactive version (see "Simple Usage in Windows" above) only asks _if_ the user wants to have it replaced and replaces it with `LT`.
+`CSL2XSB` offers to perform this change using the `--replaceDR` option. On the command line you can enter any string. With LiveTraffic, only `LT` will work. The interactive version (see "Simple Usage in Windows" above) only asks _if_ the user wants to have it replaced and replaces it with `LT`.
 
-**Note:** CSL package converted to a different dataRef root can no longer be used with any other client. This copy will only work with LiveTraffic and only if the root string is `LT`.
+**Note:** CSL packages converted to a different dataRef root can no longer be used with any other client. This copy will only work with LiveTraffic and only if the root string is `LT`.
 
 ## Package-specific Information
 
 ### X-CSL
 
-X-CSL packages can be downloaded [here](https://csl.x-air.ru/downloads?lang_id=43). If you don't already have the package (e.g. because you use X-IvAp) then download and start the installer. The installer will _not_ identify LiveTraffic as a supported plugin. Instead, from the menu select `File > Select Custom Path` and specify a path where the CSL packages are to be downloaded to and where they later can be updated. 
+X-CSL packages can be downloaded [here](https://csl.x-air.ru/downloads?lang_id=43). If you don't already have the package (e.g. because you use X-IvAp) then download and start the installer. The installer will _not_ identify LiveTraffic as a supported plugin. Instead, from the menu select `File > Select Custom Path` and specify a path where the CSL packages are to be downloaded to and where they later can be updated.
 
 Do not let `CSL2XSB.py` run on this original download. Always make a copy of the entire folder into a folder LiveTraffic can reach, e.g. to `<...>/LiveTraffic/Resources/X-CSL`. Now run the script on this copy, e.g. like this:
 ```
