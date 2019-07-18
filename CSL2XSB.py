@@ -192,8 +192,8 @@ def HandleXsbObj8Solid(path: Path, line: str) -> str:
             print ('   ERROR - ' + _currAircraft + ': Cannot access OBJ8 file, skipped: ' + str(obj8_in_file_p))
             return None
 
-        # livery texture and Lit texture
-        textureLivery_p = path / word[4]
+        # livery texture and Lit texture (relative to the in-obj8-file)
+        textureLivery_p = obj8_in_file_p.parent / word[4]
         if not textureLivery_p.is_file():
             if textureLivery_p.with_suffix('.png').is_file():           # X-CSL sometimes has wrong suffix in xsb_aircraft.txt, i.e. couldn't have worked, fix it, too.
                 print ('   WARNING - {}: Could not find texture file {}, but found and used {}'.format(_currAircraft, textureLivery_p, textureLivery_p.with_suffix('.png').name))
@@ -205,10 +205,10 @@ def HandleXsbObj8Solid(path: Path, line: str) -> str:
                 print ('   WARNING - '+_currAircraft+': Cannot find texture file, continue anyway: ', textureLivery_p)
                 _warnings += 1
 
-        # also Lit texture defined?
+        # also Lit texture defined? (relative to the in-obj8-file)
         textureLit_p = None
         if numWords >= 6:
-            textureLit_p = path / word[5]
+            textureLit_p = obj8_in_file_p.parent / word[5]
             if not textureLit_p.is_file():
                 if textureLit_p.with_suffix('.png').is_file():
                     print ('   WARNING - {}: Could not find lit texture file {}, but found and used {}'.format(_currAircraft, textureLit_p, textureLit_p.with_suffix('.png').name))
@@ -226,8 +226,8 @@ def HandleXsbObj8Solid(path: Path, line: str) -> str:
 
         # Update the OBJ8 file
         UpdateOBJ8File(obj8_in_file_p, obj8_out_file_p,         \
-                       str(textureLivery_p.relative_to(path)),                    \
-                       str(textureLit_p.relative_to(path)) if textureLit_p is not None else None)
+                       str(textureLivery_p.relative_to(obj8_out_file_p.parent)),                    \
+                       str(textureLit_p.relative_to(obj8_out_file_p.parent)) if textureLit_p is not None else None)
 
         # --- return the new line for the xsb_aircraft file ---
         newLn = word[0] + ' ' + word[1] + ' ' + word[2] + ' ' + str(object_out_p)
