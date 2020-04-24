@@ -1,26 +1,24 @@
 # CSL2XSB
-Converts CSL packages to the original XSB format for use in [LiveTraffic](https://twinfan.gitbook.io/livetraffic/) (and probably XSquawkBox). Updates some CSL dataRefs (engine/prop rotation, reversers) so they become available to LiveTraffic.
+Converts CSL packages to the original XSB format for use in [LiveTraffic](https://twinfan.gitbook.io/livetraffic/) (and probably XSquawkBox).
+Updates some CSL dataRefs (engine/prop rotation, reversers) so they become available to LiveTraffic.
 Currently only tested with the following providers:
 
 - [Bluebell Package](https://forums.x-plane.org/index.php?/files/file/37041-bluebell-obj8-csl-packages/)
 - [X-CSL](https://csl.x-air.ru/?lang_id=43)
-
-More probably to come with future versions.
 
 As this is a Python 3 script you [need Python 3](https://www.python.org/downloads/).
 Tested with Python 3.7.3.
 
 ## Simple usage in Windows
 
-- Install Python 3 using the "Windows x86-64 web-based installer" [direct link for v3.7.3](https://www.python.org/ftp/python/3.7.3/python-3.7.3-amd64-webinstall.exe).
-    - Important: Check (select) the option "Add Python 3.7 to PATH" at the bottom of the "Install Python" window.
+- [Download](https://www.python.org/downloads/) and install Python 3 using the latest "Windows x86-64 web-based installer"
+    - Important: Check (select) the option "Add Python 3.x to PATH" at the bottom of the "Install Python" window.
     - Click on "Install Now". Python will install.
-    - When donw, click "Close" in the "Setup was successfull" screen. Now you've got Python 3.
+    - When done, click "Close" in the "Setup was successfull" screen. Now you've got Python 3.
 - Download a CSL package like from X-CSL.
 - Make a copy of it!
 - Put the `CSL2XSB.py` script into the base directory of the that copy.
 - Double-lick the `CSL2XSB.py` script in the explorer to start it. It will ask you if you want to run the script in that current directory. Enter "y" and hit Enter.
-- It then asks "Do you want to make the CSL packages unique to LiveTraffic?" Read below about it in the section "Several multiplayer clients in parallel". If unsure leave this alone and just hit enter.
 
 ## Synopsis
 
@@ -28,8 +26,8 @@ Tested with Python 3.7.3.
 usage: CSL2XSB.py [-h] [--noupdate] [--norecursion] [-v] [--replaceDR TEXT]
                   [path]
 
-CSL2XSB 0.2.0: Convert CSL packages to original XSB format. Tested with:
-X-CSL.
+CSL2XSB 0.3.0: Convert CSL packages to original XSB format, convert some
+animation dataRefs. Tested with: Bluebell, X-CSL.
 
 positional arguments:
   path              Base path, searched recursively for CSL packages
@@ -42,8 +40,10 @@ optional arguments:
   --norecursion     Do not search directories recursively
   -v, --verbose     More detailed output about every change
   --replaceDR TEXT  Replace dataRef's root 'libxplanemp' with TEXT. CAUTION:
-                    CSLs' animations/lights will no longer work with standard
-                    multipayer clients not supporting modified dataRefs!
+                    This works with LiveTraffic up to v1.5 only. CSLs'
+                    animations/lights will no longer work with standard
+                    multipayer clients nor with LiveTraffic starting from
+                    v2.0!
 ```
 
 This will likely produce many new files, especially new `.OBJ` files, so disk usage increases.
@@ -58,13 +58,15 @@ This only works for the OBJ8 format, which, however, is nowadays common.
 
 ### Using several multiplayer clients in parallel - replacing root dataRef string
 
+**Note:** This problem is gone with "instancing". LiveTraffic introduces instancing with v2.0 in the course of updating for Vulkan/Metal support. Likewise, other multiplayer plugins will upgrade, too.
+
 Several multiplayer clients based on `libxplanemp` can in principle run in parallel. But it is the library, which registers the [CSL dataRefs for animations/lights](https://github.com/kuroneko/libxplanemp/wiki/OBJ8-CSL#animations), by which the objects (read: planes) learn about gear/flap extension ratio, lights etc. There can only be one plugin, which can control gear/flap/lights etc. of its AI planes. The others fail to register the CSL dataRefs and cannot control these details of their planes.
 
-LiveTraffic implements a temporary workaround for the situation: It offers to change these dataRefs, which usually all start with the text `libxplanemp/` to start with `LT/` instead. For this to work also all CSL objects, i.e. the `.obj` files, need to be changed to also use the `LT/` dataRef.
+LiveTraffic up to v1.5 implements a temporary workaround for the situation: It offers to change these dataRefs, which usually all start with the text `libxplanemp/` to start with `LT/` instead. For this to work also all CSL objects, i.e. the `.obj` files, need to be changed to also use the `LT/` dataRef.
 
 `CSL2XSB` offers to perform this change using the `--replaceDR` option. On the command line you can enter any string. With LiveTraffic, only `LT` will work. The interactive version (see "Simple Usage in Windows" above) only asks _if_ the user wants to have it replaced and replaces it with `LT`.
 
-**Note:** CSL packages converted to a different dataRef root can no longer be used with any other client. This copy will only work with LiveTraffic and only if the root string is `LT`.
+**Note:** CSL packages converted to a different dataRef root can no longer be used with any other client nor with LiveTraffic v2. This copy will only work with LiveTraffic v1.5 and only if the root string is `LT`.
 
 ## Package-specific Information
 

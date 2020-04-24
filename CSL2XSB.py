@@ -399,12 +399,12 @@ def ConvFolder(path: Path) -> int:
 
 """ === MAIN === """
 # --- Handling command line argumens ---
-parser = argparse.ArgumentParser(description='CSL2XSB 0.2.0: Convert CSL packages to original XSB format, convert some animation dataRefs. Tested with: Bluebell, X-CSL.',fromfile_prefix_chars='@')
+parser = argparse.ArgumentParser(description='CSL2XSB 0.3.0: Convert CSL packages to original XSB format, convert some animation dataRefs. Tested with: Bluebell, X-CSL.',fromfile_prefix_chars='@')
 parser.add_argument('path', help='Base path, searched recursively for CSL packages identified by existing xsb_aircraft.txt files', nargs='?', default='NULL')
 parser.add_argument('--noupdate', help='Suppress update of OBJ8 files if there are no additional textures', action='store_true')
 parser.add_argument('--norecursion', help='Do not search directories recursively', action='store_true')
 parser.add_argument('-v', '--verbose', help='More detailed output about every change', action='store_true')
-parser.add_argument('--replaceDR', metavar="TEXT", help="Replace dataRef's root 'libxplanemp' with TEXT.\nCAUTION: CSLs' animations/lights will no longer work with standard multipayer clients not supporting modified dataRefs!")
+parser.add_argument('--replaceDR', metavar="TEXT", help="Replace dataRef's root 'libxplanemp' with TEXT.\nCAUTION: This works with LiveTraffic up to v1.5 only. CSLs' animations/lights will no longer work with standard multipayer clients nor with LiveTraffic starting from v2.0!")
 
 args = parser.parse_args()
 
@@ -422,11 +422,6 @@ if args.path == 'NULL':
             exit()
         if UserWantsIt.upper() == 'Y':
             break
-
-    print ('Expert option: Do you want to make the CSL packages unique to LiveTraffic? (Read https://twinfan.gitbook.io/livetraffic/setup/installation/csl2xsb !)')
-    UserWantsDRReplacement = input ('If unsure, just press [Enter], if you really want this enter "Y": ')
-    if UserWantsDRReplacement.upper() == 'Y':
-        args.replaceDR='LT'
 
 # normalize the path, resolves relative paths and makes nice directory delimiters
 basePath = Path(args.path)
