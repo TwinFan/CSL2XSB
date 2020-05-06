@@ -282,22 +282,6 @@ def ConvFolder(path: Path) -> int:
         if args.verbose:
             print ('Writing to  ', xsb_aircraft_p)
 
-        # --- We track ICAO/AIRLINE to identify the case when the xsb_aircraft
-        #     file defines a LIVERY line without defining an AIRLINE line.
-        #     LiveTraffic cannot (yet?) select one out of many liveries for
-        #     one airline. Rather, there should be one AIRLINE entry in
-        #     xsb_aircraft that defines the standard livery per airline.
-        #     The other liveries are not easily accessible. LiveTraffic
-        #     provides the tail number for full livery match but has no
-        #     knowledge of proprietory names like "S", "S2", "S3" (as they
-        #     are sometimes used in the X-CSL package for exampele).
-        #
-        #     Similar is true for the ICAO line: One of the entries
-        #     should be the default plane if there is no matching
-        #     airline so that we at least can find the right model.
-        currIcaoType = ''
-        currAirline = ''
-
         # --- Read all lines from .orig file
         # Most of them are just copied 1:1 to the output file
         for line in xsb_aircraft_orig_f:
@@ -334,27 +318,6 @@ def ConvFolder(path: Path) -> int:
                     word[0] == 'LIVERY'):
                     word[1] = 'MD81'
                     line = ' '.join(word)
-
-                # -- track ICAO / AIRLINE (insert ICAO/AIRLINE line if only AIRLINE/LIVERY lines are in original)
-                thisIcaoType = currIcaoType
-                if word[0] == 'ICAO' or      \
-                   word[0] == 'AIRLINE' or   \
-                   word[0] == 'LIVERY':
-                    thisIcaoType = word[1]
-                # if the ICAO type changes then we declare this entry the default
-                if thisIcaoType != currIcaoType:
-                    currIcaoType = thisIcaoType
-                    currAirline = ''
-                    line = 'ICAO ' + currIcaoType
-                # ICAO type didn't change...maybe airline does?
-                elif (word[0] == 'AIRLINE' or    \
-                      word[0] == 'LIVERY') and   \
-                     numWords >= 3:
-                    thisAirline = word[2]
-                    # if airline changes then declare this entry the default for the airline
-                    if thisAirline != currAirline:
-                        currAirline = thisAirline
-                        line = 'AIRLINE ' + currIcaoType + ' ' + currAirline
 
                 # GLASS is deprecated, replace it with SOLID
                 if word[0] == 'OBJ8' and word[1] == 'GLASS':
