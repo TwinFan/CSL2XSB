@@ -242,6 +242,7 @@ def ConvFolder(path: Path) -> int:
     numObj = 0;
     global _currAircraft
     _currAircraft = '?'
+    commentingOut = 0       # Currently commenting out (due to outdated OBJECT format)?
 
     # --- Save the current version of xsb_aircraft as .orig, which we then read from ---
     assert (path.is_dir())
@@ -294,6 +295,15 @@ def ConvFolder(path: Path) -> int:
             if numWords >= 2:
                 # This is a line with at least two words
 
+                # OBJECT is an outdated format modern XPMP2 no longer supports
+                # Comment out the entire aircraft
+                if word[0] == 'OBJECT' or word[0] == 'AIRCRAFT':
+                    # assume all else is the aircraft name
+                    _currAircraft = ' '.join(word[1:])
+                    commentingOut = 1
+                    print ('   WARNING - {}: Outdated format, commented out'.format(_currAircraft))
+                    line = "--- Outdated format, no longer valid\n# " + line
+
                 # OBJ8_AIRCRAFT identifies the start of another aircraft.
                 # Technically, we don't need that info, but it's nice for user info
                 if word[0] == 'OBJ8_AIRCRAFT':
@@ -310,6 +320,8 @@ def ConvFolder(path: Path) -> int:
                     # re-write the OBJ8_AIRCRAFT line
                     word[1] = _currAircraft
                     line = 'OBJ8_AIRCRAFT ' + _currAircraft
+                    # Valid format, shall not be commented out
+                    commentingOut = 0
 
                 # X-CSL uses non-existing ICAO code 'MD80', replace with MD81
                 if word[1] == 'MD80' and        \
@@ -327,7 +339,9 @@ def ConvFolder(path: Path) -> int:
                 # -- now decide what to do with the line
 
                 # ignore deprecated or PE-extension commands
-                if (word[0] == 'OBJ8' and word[1] == 'LOW_LOD') or   \
+                if (word[0] == 'OBJ8' and word[1] == 'LOW_LOD') or  \
+                   word[0] == 'HASGEAR' or                          \
+                   word[0] == 'TEXTURE' or                          \
                    word[0] == 'OFFSET':
                     line = None
 
@@ -341,6 +355,9 @@ def ConvFolder(path: Path) -> int:
 
             # -- write the resulting line out to the new xsb_aircraft file
             if line is not None:
+                if commentingOut:
+                    xsb_aircraft_f.write("# ")
+
                 xsb_aircraft_f.write(line + '\n')
                 if args.verbose and origLine != line:
                     print ('   Written:      ' + line + '  (instead of: ' + origLine + ')')
@@ -362,7 +379,7 @@ def ConvFolder(path: Path) -> int:
 
 """ === MAIN === """
 # --- Handling command line argumens ---
-parser = argparse.ArgumentParser(description='CSL2XSB 0.3.0: Convert CSL packages to original XSB format, convert some animation dataRefs. Tested with: Bluebell, X-CSL.',fromfile_prefix_chars='@')
+parser = argparse.ArgumentParser(description='CSL2XSB 0.3.1: Convert CSL packages to XPMP2 format, convert some animation dataRefs. Tested with: Bluebell, X-CSL.',fromfile_prefix_chars='@')
 parser.add_argument('path', help='Base path, searched recursively for CSL packages identified by existing xsb_aircraft.txt files', nargs='?', default='NULL')
 parser.add_argument('--noupdate', help='Suppress update of OBJ8 files if there are no additional textures', action='store_true')
 parser.add_argument('--norecursion', help='Do not search directories recursively', action='store_true')
