@@ -39,14 +39,18 @@ _warnings = 0                       # number of warnings
 # if finding the string on the left-hand side (non-libxplanemp dataRef)
 # then replace it with the string on the right-hand side (libxplanemp dataRef)
 _DR = {
-    'cjs/world_traffic/engine_rotation_angle1':     'libxplanemp/engines/engine_rotation_angle_deg',
-    'cjs/world_traffic/engine_rotation_angle2':     'libxplanemp/engines/engine_rotation_angle_deg',
-    'cjs/world_traffic/engine_rotation_angle3':     'libxplanemp/engines/engine_rotation_angle_deg',
-    'cjs/world_traffic/engine_rotation_angle4':     'libxplanemp/engines/engine_rotation_angle_deg',
-    'cjs/world_traffic/engine_rpm1':                'libxplanemp/engines/engine_rotation_speed_rpm',
-    'cjs/world_traffic/engine_rpm2':                'libxplanemp/engines/engine_rotation_speed_rpm',
-    'cjs/world_traffic/engine_rpm3':                'libxplanemp/engines/engine_rotation_speed_rpm',
-    'cjs/world_traffic/engine_rpm4':                'libxplanemp/engines/engine_rotation_speed_rpm',
+    'cjs/world_traffic/engine_rotation_angle1':     'libxplanemp/engines/engine_rotation_angle_deg1',
+    'cjs/world_traffic/engine_rotation_angle2':     'libxplanemp/engines/engine_rotation_angle_deg2',
+    'cjs/world_traffic/engine_rotation_angle3':     'libxplanemp/engines/engine_rotation_angle_deg3',
+    'cjs/world_traffic/engine_rotation_angle4':     'libxplanemp/engines/engine_rotation_angle_deg4',
+    'cjs/world_traffic/engine_rpm1':                'libxplanemp/engines/engine_rotation_speed_rpm1',
+    'cjs/world_traffic/engine_rpm2':                'libxplanemp/engines/engine_rotation_speed_rpm2',
+    'cjs/world_traffic/engine_rpm3':                'libxplanemp/engines/engine_rotation_speed_rpm3',
+    'cjs/world_traffic/engine_rpm4':                'libxplanemp/engines/engine_rotation_speed_rpm4',
+    'cjs/world_traffic/engine_rad_per_sec1':        'libxplanemp/engines/engine_rotation_speed_rad_sec1',
+    'cjs/world_traffic/engine_rad_per_sec2':        'libxplanemp/engines/engine_rotation_speed_rad_sec2',
+    'cjs/world_traffic/engine_rad_per_sec3':        'libxplanemp/engines/engine_rotation_speed_rad_sec3',
+    'cjs/world_traffic/engine_rad_per_sec4':        'libxplanemp/engines/engine_rotation_speed_rad_sec4',
     'cjs/world_traffic/thrust_reverser_position':   'libxplanemp/engines/thrust_reverser_deploy_ratio',
     'cjs/world_traffic/touch_down':                 'libxplanemp/misc/touch_down',
     'cjs/world_traffic/main_gear_deflection':       'libxplanemp/gear/tire_vertical_deflection_mtr',
@@ -111,7 +115,7 @@ def UpdateOBJ8File(in_p:Path, out_p:Path, textureLivery:str = None, textureLit:s
                 if textureLit is not None and word[0] == 'TEXTURE_LIT':
                     line = 'TEXTURE_LIT ' + textureLit
 
-            # dataRefs replacements (only if there is a change for dataRefs in the line)
+            # dataRefs replacements (only if there is a chance for dataRefs in the line)
             if '/' in line:
                 line = OBJ8ReplaceDataRefs(line)
 
