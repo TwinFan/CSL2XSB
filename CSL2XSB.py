@@ -55,7 +55,7 @@ _DR = {
     'cjs/world_traffic/touch_down':                 'libxplanemp/misc/touch_down',
     'cjs/world_traffic/main_gear_deflection':       'libxplanemp/gear/tire_vertical_deflection_mtr',
     'cjs/world_traffic/main_gear_wheel_angle':      'libxplanemp/gear/tire_rotation_angle_deg',
-    'cjs/world_traffic/nose_gear_deflection':       'libxplanemp/gear/tire_vertical_deflection_mtr',
+    'cjs/world_traffic/nose_gear_deflection':       'libxplanemp/gear/nose_gear_deflection_mtr',
     'cjs/world_traffic/nose_gear_wheel_angle':      'libxplanemp/gear/tire_rotation_angle_deg',
     'cjs/world_traffic/nose_gear_steering_angle':   'libxplanemp/controls/nws_ratio',
     'cjs/wolrd_traffic/landing_lights_on':          'libxplanemp/controls/landing_lites_on',
@@ -335,22 +335,16 @@ def ConvFolder(path: Path) -> int:
                     word[1] = 'MD81'
                     line = ' '.join(word)
 
-                # GLASS is deprecated, replace it with SOLID
-                if word[0] == 'OBJ8' and word[1] == 'GLASS':
-                    word[1] = 'SOLID'
-                    line = ' '.join(word)
-
                 # -- now decide what to do with the line
 
                 # ignore deprecated or PE-extension commands
                 if (word[0] == 'OBJ8' and word[1] == 'LOW_LOD') or  \
                    word[0] == 'HASGEAR' or                          \
-                   word[0] == 'TEXTURE' or                          \
-                   word[0] == 'OFFSET':
+                   word[0] == 'TEXTURE':
                     line = None
 
-                # OBJ8 SOLID/LIGHTS is the one line we _really_ need to work on!
-                elif (word[0] == 'OBJ8' and (word[1] == 'SOLID' or word[1] == 'LIGHTS')):
+                # OBJ8 is the one line we _really_ need to work on!
+                elif (word[0] == 'OBJ8'):
                     Obj8SolidLine = HandleXsbObj8Solid(path, line)
                     if Obj8SolidLine is not None:
                         # and we did something to the OBJ8 line:
