@@ -1,7 +1,17 @@
 # CSL2XSB
-Converts CSL packages to the XSB format for use in [LiveTraffic](https://twinfan.gitbook.io/livetraffic/) or more specifically: as expected by
-the [XPMP2 library](https://github.com/TwinFan/XPMP2), a success to the
-classic libxplanemp.
+
+## Archived, no longer maintained nor needed
+
+The functionality provided by this script is now included into the [XPMP2 library](https://github.com/TwinFan/XPMP2) as of v1.0.0 and applied to any `.obj` file shortly before being loaded.
+
+For users of LiveTraffic this means: Just don't worry any longer, LiveTraffic does it for you automatically!
+
+Developers find more information in [XPMP2's documentation]([XPMP2 library](https://github.com/TwinFan/XPMP2)).
+
+## Functionality
+
+Converted CSL packages to the XSB format for use in [LiveTraffic](https://twinfan.gitbook.io/livetraffic/) (up to v2.09) or more specifically: as expected by
+the [XPMP2 library](https://github.com/TwinFan/XPMP2) (up to v0.6), a successor to the classic libxplanemp.
 
 `CSL2XSB` updates some CSL dataRefs (engine/prop rotation, reversers) so they become available to LiveTraffic (and other XPMP2-driven plugins).
 
